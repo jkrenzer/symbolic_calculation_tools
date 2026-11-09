@@ -1,0 +1,24 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run in devcontainer
+        uses: devcontainers/ci@v0.3
+        with:
+          runCmd: |
+            poetry install --with dev
+            poetry check
+            poetry run prek run --all-files
+            poetry run cz check --message "$(git log -1 --pretty=%B)"
